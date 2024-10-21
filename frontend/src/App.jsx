@@ -6,11 +6,13 @@
   import Error from "./pages/Error";
   import Dashboard from "./pages/Dashboard";
   import AccountProvider from "./context/AccountContext";
+import { RecoilRoot } from "recoil";
 
   function App() {
     return (
       <div className="App">
         <AccountProvider>
+          <RecoilRoot>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -20,6 +22,7 @@
               <Route path="*" element={<Error />} />
             </Routes>
           </BrowserRouter>
+          </RecoilRoot>
         </AccountProvider>
       </div>
     );

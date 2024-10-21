@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAccountContext } from "../context/AccountContext";
+import { Alert } from "../components/Alert";
+import { useRecoilState} from "recoil";
+import { alertState } from "../store/atoms/alertAtom";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -10,6 +13,8 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const { id, setId } = useAccountContext();
   const navigate = useNavigate();
+  const [alertAtom,setalertatom] = useRecoilState(alertState)
+
 
   useEffect(() => {
     if (id !== null) {
@@ -21,28 +26,46 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      setalertatom({
+        message:"Passwords do not match",
+        showAlert:true,
+        statusCode:404
+      })
       return;
     }
     // console.log(email, password);
     // console.log(process.env.REACT_APP_BACKEND_URL);
     try {
       await axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/user/register`, {
+        .post(`${process.env.REACT_APP_BACKEND_URL}user/register`, {
           email,
           password,
         })
         .then((res) => {
           // console.log(res);
           setId(res.data.id);
+          setalertatom({
+            message:"You have successfully signed up redirecting to dashboard!",
+            showAlert:true,
+            statusCode:200
+          })
           navigate("/dashboard");
         });
     } catch (error) {
       console.error("Signup error:", error);
+      setalertatom({
+        message:"Error while sigining up view in the console",
+        showAlert:true,
+        statusCode:404
+      })
     }
   };
   return (
-    <div className="flex flex-col gap-4 h-full w-full items-center justify-center">
+      <div className="flex flex-col gap-4 h-full w-full items-center justify-center mt-50">
+        <div>
+        <Alert alertatom ={alertAtom} setalertatom={setalertatom}/>
+
+      </div>
       <form
         onSubmit={handleSubmit}
         className="flex w-[300px] flex-col gap-4 bg-gray-600 p-4 rounded-lg"

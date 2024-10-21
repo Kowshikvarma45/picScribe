@@ -1,17 +1,26 @@
-import { Button, Checkbox, FloatingLabel, Label } from "flowbite-react";
+import { Alert, Button, Checkbox, FloatingLabel, Label } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAccountContext } from "../context/AccountContext";
+import { useRecoilState} from "recoil";
+import { alertState } from "../store/atoms/alertAtom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { id, setId } = useAccountContext();
   const navigate = useNavigate();
+  const [alertAtom,setalertatom] = useRecoilState(alertState)
+
 
   useEffect(() => {
     if (id !== null) {
+      setalertatom({
+        message:"successfully logged in!",
+        statusCode:200,
+        showAlert:true
+      })
       navigate("/dashboard");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -22,16 +31,26 @@ const Login = () => {
     // console.log(email, password);
 
     await axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/user/login`, {
+      .post(`${process.env.REACT_APP_BACKEND_URL}user/login`, {
         email,
         password,
       })
       .then((res) => {
         // console.log(res);
         setId(res.data.id);
+        setalertatom({
+          message:"successfully logged in!",
+          statusCode:200,
+          showAlert:true
+        })
         navigate("/dashboard");
       })
       .catch((err) => {
+        setalertatom({
+          message:"sorry an error occured while logging in!",
+          statusCode:404,
+          showAlert:true
+        })
         console.log(err);
       });
     setEmail("");
@@ -39,7 +58,10 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 h-full w-full items-center justify-center">
+    <div className="flex flex-col gap-4 h-full w-full items-center justify-center mt-50">
+      <div className="bg-black">
+      <Alert alertatom ={alertAtom} setalertatom={setalertatom}/>
+    </div>
       <form
         onSubmit={handleSubmit}
         className="flex w-[300px] flex-col gap-4 bg-gray-600 p-4 rounded-lg"
@@ -76,6 +98,7 @@ const Login = () => {
         Don't have an account? Sign up
       </Link>
     </div>
+    
   );
 };
 

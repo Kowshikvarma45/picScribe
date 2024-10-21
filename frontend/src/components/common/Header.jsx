@@ -1,19 +1,28 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAccountContext } from "../../context/AccountContext";
-import { Button } from "flowbite-react";
+import { Alert, Button } from "flowbite-react";
+import { useSetRecoilState } from "recoil";
+import { alertState } from "../../store/atoms/alertAtom";
 
 const Header = () => {
   const { setId } = useAccountContext();
   const navigate = useNavigate();
+  const setalertatom = useSetRecoilState(alertState)
 
   const handleLogout = () => {
     setId(null);
+    setalertatom({
+      message:"logged out",
+      statusCode:200,
+      showAlert:true
+    })
     navigate("/");
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
+    <div>
+      <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a
           href="https://github.com/leocodeio"
@@ -27,6 +36,10 @@ const Header = () => {
         </div>
       </div>
     </nav>
+    <div className="flex flex-col justify-items-end">
+      <Alert/>
+    </div>
+    </div>
   );
 };
 

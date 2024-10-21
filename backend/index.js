@@ -10,6 +10,7 @@ const app = express();
 const port = process.env.BACKEND_PORT;
 
 import userRoutes from "./routes/user.routes.js";
+import { createUser, getUser } from "./contollers/user.controller.js";
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -17,7 +18,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 connectDB();
 
-app.use("/user", userRoutes);
+app.post('/user/register',(req,res)=>{
+    createUser(req,res)
+})
+
+app.post('/user/login',(req,res)=>{
+    getUser(req,res)
+})
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
